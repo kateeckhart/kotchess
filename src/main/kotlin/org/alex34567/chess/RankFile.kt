@@ -10,12 +10,12 @@ private fun <T> genPool(constructor: (Int) -> T): List<T> {
     return pool
 }
 
-abstract class RankFileFactory<out T> {
+abstract class RankFileFactory<out T> internal constructor() {
     abstract fun newInstance(rankFile: Int): T?
 }
 
 sealed class RankFileSuper<out T> {
-    abstract val factory: RankFileFactory<T>
+    abstract internal val factory: RankFileFactory<T>
     abstract fun toInt(): Int
 }
 

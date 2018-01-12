@@ -66,7 +66,7 @@ class Board private constructor(private val rawBoard: List<Row>) : Iterable<Row>
 
     /** Indexes the board by pos.
      *
-     * @param pos the possition of the piece
+     * @param pos the position of the piece
      * @return the piece at pos
      */
     operator fun get(pos: Pos): Piece? {

@@ -10,9 +10,13 @@ private fun <T> genPool(constructor: (Int) -> T): List<T> {
     return pool
 }
 
-sealed class RankFileSuper<out T> {
-    abstract fun toInt(): Int
+abstract class RankFileFactory<out T> {
     abstract fun newInstance(rankFile: Int): T?
+}
+
+sealed class RankFileSuper<out T> {
+    abstract val factory: RankFileFactory<T>
+    abstract fun toInt(): Int
 }
 
 sealed class RankFile<T : RankFileSuper<T>> constructor(protected val rawRankFile: Int) :
@@ -27,11 +31,11 @@ sealed class RankFile<T : RankFileSuper<T>> constructor(protected val rawRankFil
     }
 
     operator fun plus(other: T): T? {
-        return other.newInstance(rawRankFile + other.toInt())
+        return factory.newInstance(rawRankFile + other.toInt())
     }
 
     operator fun minus(other: T): T? {
-        return other.newInstance(rawRankFile - other.toInt())
+        return factory.newInstance(rawRankFile - other.toInt())
     }
 
     override final operator fun compareTo(other: T): Int {
@@ -47,7 +51,7 @@ sealed class RankFile<T : RankFileSuper<T>> constructor(protected val rawRankFil
         if (this >= other) return emptyList()
 
         //Ignore null because other cannot be out of bounds
-        return (rawRankFile..other.toInt()).map({ newInstance(it)!! })
+        return (rawRankFile..other.toInt()).map({ factory.newInstance(it)!! })
     }
 }
 
@@ -70,9 +74,9 @@ class Rank private constructor(rank: Int) : RankFile<Rank>(rank) {
         return rawRankFile + 1
     }
 
-    override fun newInstance(rankFile: Int): Rank? = Companion.newInstance(rankFile)
+    override val factory: RankFileFactory<Rank> get() = Factory
 
-    companion object {
+    companion object Factory : RankFileFactory<Rank>() {
         private val POOL = genPool { rank -> Rank(rank) }
 
         val ONE get() = POOL[0]
@@ -84,7 +88,7 @@ class Rank private constructor(rank: Int) : RankFile<Rank>(rank) {
         val SEVEN get() = POOL[6]
         val EIGHT get() = POOL[7]
 
-        fun newInstance(rankFile: Int): Rank? {
+        override fun newInstance(rankFile: Int): Rank? {
             if (rankFile < 1 || rankFile > 8) return null
 
             return POOL[rankFile - 1]
@@ -108,13 +112,13 @@ class File private constructor(file: Int) : RankFile<File>(file) {
         return rawRankFile
     }
 
-    override fun newInstance(rankFile: Int): File? = Companion.newInstance(rankFile)
-
     override fun toString(): String {
         return ('A' + toInt()).toString()
     }
 
-    companion object {
+    override val factory: RankFileFactory<File> get() = Factory
+
+    companion object Factory : RankFileFactory<File>() {
         private val POOL = genPool { file -> File(file) }
 
         val A get() = POOL[0]
@@ -126,7 +130,7 @@ class File private constructor(file: Int) : RankFile<File>(file) {
         val G get() = POOL[6]
         val H get() = POOL[7]
 
-        fun newInstance(rankFile: Int): File? {
+        override fun newInstance(rankFile: Int): File? {
             if (rankFile < 0 || rankFile > 7) return null
 
             return POOL[rankFile]

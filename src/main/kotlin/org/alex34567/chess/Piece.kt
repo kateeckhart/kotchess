@@ -4,28 +4,12 @@ import java.util.Objects.hash
 
 class Piece private constructor(val type: Type, val color: Color) {
     enum class Type(val whiteChar: Char, val blackChar: Char) {
-        PAWN('♙', '♟') {
-            /*override fun possibleMoves(color: Color, currPos: Pos): Iterable<Pos> {
-                val startRank = when(color) {
-                    Color.WHITE -> Rank.newInstance(2)
-                    Color.BLACK -> Rank.newInstance(6)
-                }
-                val firstMove = currPos.rank == startRank
-
-                val direction = when(color) {
-                    Color.WHITE -> 1
-                    Color.BLACK -> -1
-                }
-
-            }*/
-        },
+        PAWN('♙', '♟'),
         QUEEN('♕', '♛'),
         KING('♔', '♚'),
         ROOK('♖', '♜'),
         BISHOP('♗', '♝'),
         KNIGHT('♘', '♞');
-
-        //protected abstract fun possibleMoves(color: Color, currPos: Pos): Iterable<Pos>
     }
 
     override fun equals(other: Any?): Boolean {

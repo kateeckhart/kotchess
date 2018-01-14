@@ -14,13 +14,10 @@ abstract class RankFileFactory<out T> internal constructor() {
     abstract fun newInstance(rankFile: Int): T?
 }
 
-sealed class RankFileSuper<out T> {
+sealed class RankFile<T : RankFile<T>> constructor(protected val rawRankFile: Int) : Comparable<T> {
+
     abstract internal val factory: RankFileFactory<T>
     abstract fun toInt(): Int
-}
-
-sealed class RankFile<T : RankFileSuper<T>> constructor(protected val rawRankFile: Int) :
-        Comparable<T>, RankFileSuper<T>() {
 
     abstract override fun toString(): String
 

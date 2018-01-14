@@ -73,22 +73,12 @@ class Board private constructor(private val rawBoard: List<Row>) : Iterable<Row>
         return this[pos.rank][pos.file]
     }
 
-    /** Moves a piece.
-     *
-     * @param from the position of the piece you want to move
-     * @param to where the piece will go
-     * @return a board with the piece moved
-     */
-    fun movePiece(from: Pos, to: Pos): Board {
+    fun replacePiece(pos: Pos, piece: Piece?): Board {
         val newBoard = ArrayList(rawBoard)
-        val fromNewRow = Row.Builder(this[from.rank])
-        val piece = fromNewRow[from.file]
-        fromNewRow[from.file] = null
-        newBoard[from.rank] = fromNewRow.build()
+        val newRow = Row.Builder(newBoard[pos.rank])
+        newRow[pos.file] = piece
 
-        val toNewRow = Row.Builder(newBoard[to.rank])
-        toNewRow[to.file] = piece
-        newBoard[to.rank] = toNewRow.build()
+        newBoard[pos.rank] = newRow.build()
         return Board(newBoard)
     }
 

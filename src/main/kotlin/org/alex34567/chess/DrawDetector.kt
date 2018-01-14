@@ -14,8 +14,11 @@ sealed class DrawDetector() {
 private class DrawNotDetected(val repetition: Map<State, Int>, val nonCap: Int) : DrawDetector() {
 
     override fun addMove(move: State): DrawDetector {
+        if (move.resetDraw) {
+            return EMPTY.addMove(move.copy(resetDraw = false))
+        }
         val map = repetition.toMutableMap()
-        val count = map.compute(move, {_: State, count: Int? ->
+        val count = map.compute(move, { _: State, count: Int? ->
             count?.plus(1) ?: 1
         })
         if (nonCap == 99 || count == 3) {
@@ -29,7 +32,9 @@ private class DrawNotDetected(val repetition: Map<State, Int>, val nonCap: Int) 
 
 
 private object DrawDetected : DrawDetector() {
-    override fun addMove(move: State): DrawDetector {return this}
+    override fun addMove(move: State): DrawDetector {
+        return this
+    }
 
     override val isDraw: Boolean get() = true
 }

@@ -64,6 +64,8 @@ data class State(val turn: Color, val board: Board, val castleRights: ColorTuple
 
         if (!rights.canCastle(side)) return false
 
+        if (isCheck.of(turn)) return false
+
         val rookPos = Pos(turn.nonPawnRank, side.file)
         if (board[rookPos]?.type != Piece.Type.ROOK) return false
 

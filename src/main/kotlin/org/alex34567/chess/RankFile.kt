@@ -1,5 +1,7 @@
 package org.alex34567.chess
 
+import kotlin.math.abs
+
 private fun <T> genPool(constructor: (Int) -> T): List<T> {
     val pool: MutableList<T> = ArrayList(8)
 
@@ -16,7 +18,7 @@ abstract class RankFileFactory<out T> internal constructor() {
 
 sealed class RankFile<T : RankFile<T>> constructor(protected val rawRankFile: Int) : Comparable<T> {
 
-    abstract internal val factory: RankFileFactory<T>
+    abstract val factory: RankFileFactory<T>
     abstract fun toInt(): Int
 
     abstract override fun toString(): String
@@ -33,6 +35,12 @@ sealed class RankFile<T : RankFile<T>> constructor(protected val rawRankFile: In
 
     operator fun minus(other: T): T? {
         return factory.newInstance(rawRankFile - other.toInt())
+    }
+
+    fun absSub(other: T): Int {
+        val thisInt = toInt()
+        val otherInt = other.toInt()
+        return abs(thisInt - otherInt)
     }
 
     override final operator fun compareTo(other: T): Int {

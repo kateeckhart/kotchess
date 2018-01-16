@@ -164,13 +164,15 @@ class Piece private constructor(val type: Type, val color: Color) {
             }
         },
         ENPASSANT('█', '█') {
-            override fun onCapture(state: State, pos: Pos): State {
-                val color = state.board[pos]?.color ?: return state
+            override fun onCapture(state: State, from: Pos, to: Pos): State {
+                val color = state.board[to]?.color ?: return state
 
-                val pawnPos = pos.copy(rank = color.fourthRank)
+                if (state.board[from]?.type != PAWN) return state
+
+                val pawnPos = to.copy(rank = color.fourthRank)
                 val newBoard = state.board.replacePiece(pawnPos, null)
 
-                return super.onCapture(state.copy(board = newBoard), pos)
+                return super.onCapture(state.copy(board = newBoard), from, to)
             }
 
             override fun canMove(state: State, from: Pos, to: Pos): Boolean = false
@@ -187,7 +189,7 @@ class Piece private constructor(val type: Type, val color: Color) {
 
             val capturedPiece = newState.board[to]
             if (capturedPiece != null) {
-                newState = capturedPiece.type.onCapture(newState, to)
+                newState = capturedPiece.type.onCapture(newState, from, to)
             }
 
             val piece = newState.board[from]
@@ -202,7 +204,7 @@ class Piece private constructor(val type: Type, val color: Color) {
             return true
         }
 
-        open fun onCapture(state: State, pos: Pos): State {
+        open fun onCapture(state: State, from: Pos, to: Pos): State {
             return state.copy(resetDraw = true)
         }
 
